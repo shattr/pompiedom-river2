@@ -25,6 +25,7 @@ use PocketIO;
 use File::Slurp 'read_file';
 use AnyEvent;
 use Data::Dumper;
+use JSON::XS 'decode_json';
 
 BEGIN {
     $ENV{ZMQ_PERL_BACKEND} = 'ZMQ::LibZMQ3';
@@ -40,7 +41,7 @@ sub random_key {
     my @chars = 'A' .. 'Z';
     my $key   = '';
     for (1 .. 8) {
-        $key .= $chars[int rand(@chars)];
+        $key .= $chars[ int rand(@chars) ];
     }
     return $key;
 }
@@ -57,14 +58,16 @@ our $w = AE::io(
     sub {
         while (my $msg = $sub->recvmsg(ZMQ_NOBLOCK)) {
             eval {
-                my $data = $msg->data;
-                say $data;
+                my $data = decode_json($msg->data);
+                say Dumper($data);
                 $msg->close;
-
                 for my $socket (values %connections) {
                     $socket->send($data);
                 }
             };
+            if ($@) {
+                die $@;
+            }
         }
         return;
     },
@@ -87,7 +90,7 @@ builder {
             $self->set('key', $k);
             $connections{$k} = $self;
 
-            $self->send({key => $k});
+            $self->send({ key => $k });
 
             $self->on(
                 'disconnect',
@@ -109,7 +112,7 @@ builder {
     enable "Static", path => sub { s!^/static/!! }, root => 'static';
 
     mount '/' => sub {
-        return [200, [], [read_file('templates/index.tt')]];
+        return [ 200, [], [ read_file('templates/index.tt') ] ];
     };
 };
 

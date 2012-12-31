@@ -21,6 +21,7 @@ use 5.10.1;
 use strict;
 use Data::Dumper;
 use Time::HiRes 'sleep';
+use JSON::XS 'encode_json';
 
 BEGIN {
     $ENV{ZMQ_PERL_BACKEND} = 'ZMQ::LibZMQ3';
@@ -46,7 +47,17 @@ POLL: for (;;) {
     say scalar @f;
 
     for (@f) {
-        $_->{socket}->sendmsg("test " . $n);
+        # title is optional or description is optional
+        # link is optional, pubDate is optional
+        my $msg = [
+            {
+                title       => '',
+                description => 'Hello world',
+                link        => 'http://peterstuifzand.nl',
+                pubDate     => ''
+            }
+        ];
+        $_->{socket}->sendmsg(encode_json($msg));
         sleep 1;
         $n++;
     }
