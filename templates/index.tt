@@ -27,7 +27,9 @@
 
                 socket.on('message', function(data) {
                     console.log(data);
-                    $('div.new_messages').after($("<p>"+data+"</p>"));
+                    if (!data.key) {
+                        $('div.new_messages').after($("<p>"+data+"</p>"));
+                    }
                 });
             });
         </script>
