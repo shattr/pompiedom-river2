@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>pomiedom-river2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" type="text/css" />
+        <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-responsive.min.css" type="text/css" />
+        <link rel="stylesheet" href="/static/style.css" type="text/css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="span8">
+                    <h1>Messages</h1>
+                    <div class="new_messages"></div>
+                </div>
+                <div class="span4">
+                </div>
+            </div>
+        </div>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            $(document).ready(function() {
+                var socket = io.connect('http://localhost:5000');
+
+                socket.on('message', function(data) {
+                    console.log(data);
+                    if (!data.key) {
+                        $('div.new_messages').after($("<p>"+data+"</p>"));
+                    }
+                });
+            });
+        </script>
+
+    </body>
+</html>
+
