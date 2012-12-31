@@ -25,6 +25,7 @@ use PocketIO;
 use File::Slurp 'read_file';
 use AnyEvent;
 use Data::Dumper;
+
 BEGIN {
     $ENV{ZMQ_PERL_BACKEND} = 'ZMQ::LibZMQ3';
 }
@@ -36,9 +37,9 @@ my $root = 'static/socket.io';
 my %connections;
 
 sub random_key {
-    my @chars = 'A'..'Z';
-    my $key = '';
-    for (1..8) {
+    my @chars = 'A' .. 'Z';
+    my $key   = '';
+    for (1 .. 8) {
         $key .= $chars[int rand(@chars)];
     }
     return $key;
@@ -51,7 +52,9 @@ $sub->setsockopt(ZMQ_SUBSCRIBE, '');
 $sub->bind('tcp://127.0.0.1:5959');
 
 our $w = AE::io(
-    $sub->getsockopt(ZMQ_FD), 0, sub {
+    $sub->getsockopt(ZMQ_FD),
+    0,
+    sub {
         while (my $msg = $sub->recvmsg(ZMQ_NOBLOCK)) {
             eval {
                 my $data = $msg->data;
@@ -68,9 +71,12 @@ our $w = AE::io(
 );
 
 builder {
-    mount "/socket.io/socket.io.js" => Plack::App::File->new(file => "$root/socket.io.js");
-    mount '/socket.io/static/flashsocket/WebSocketMain.swf' => Plack::App::File->new(file => "$root/WebSocketMain.swf");
-    mount '/socket.io/static/flashsocket/WebSocketMainInsecure.swf' => Plack::App::File->new(file => "$root/WebSocketMainInsecure.swf");
+    mount "/socket.io/socket.io.js" =>
+      Plack::App::File->new(file => "$root/socket.io.js");
+    mount '/socket.io/static/flashsocket/WebSocketMain.swf' =>
+      Plack::App::File->new(file => "$root/WebSocketMain.swf");
+    mount '/socket.io/static/flashsocket/WebSocketMainInsecure.swf' =>
+      Plack::App::File->new(file => "$root/WebSocketMainInsecure.swf");
 
     mount "/socket.io" => PocketIO->new(
         handler => sub {
@@ -83,13 +89,19 @@ builder {
 
             $self->send({key => $k});
 
-            $self->on('disconnect', sub {
-                my $self = shift;
-                $self->get('key', sub {
-                    my ($err, $key) = @_;
-                    delete $connections{$key};
-                });
-            });
+            $self->on(
+                'disconnect',
+                sub {
+                    my $self = shift;
+                    $self->get(
+                        'key',
+                        sub {
+                            my ($err, $key) = @_;
+                            delete $connections{$key};
+                        }
+                    );
+                }
+            );
             return;
         }
     );
@@ -97,7 +109,8 @@ builder {
     enable "Static", path => sub { s!^/static/!! }, root => 'static';
 
     mount '/' => sub {
-        return [ 200, [], [ read_file('templates/index.tt') ] ];
+        return [200, [], [read_file('templates/index.tt')]];
     };
 };
 
+# vim:ft=perl

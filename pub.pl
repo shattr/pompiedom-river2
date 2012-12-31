@@ -28,7 +28,6 @@ BEGIN {
 use ZMQ;
 use ZMQ::Constants qw/:all/;
 
-
 my $ctx = ZMQ::Context->new(1);
 
 my $poller = ZMQ::Poller->new;
@@ -52,5 +51,4 @@ POLL: for (;;) {
         $n++;
     }
 }
-
 
