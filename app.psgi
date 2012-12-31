@@ -31,7 +31,7 @@ BEGIN {
 use ZMQ;
 use ZMQ::Constants qw/:all/;
 
-my $root = '/home/peter/work/pompiedom-river2/static/socket.io';
+my $root = 'static/socket.io';
 
 my %connections;
 
