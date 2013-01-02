@@ -17,6 +17,7 @@
 
 use 5.10.1;
 use strict;
+use lib 'lib';
 
 use Carp;
 use Plack::Builder;
@@ -80,6 +81,8 @@ builder {
       Plack::App::File->new(file => "$root/WebSocketMain.swf");
     mount '/socket.io/static/flashsocket/WebSocketMainInsecure.swf' =>
       Plack::App::File->new(file => "$root/WebSocketMainInsecure.swf");
+
+    enable "+Pompiedom::Plack::Middleware::CORS";
 
     mount "/socket.io" => PocketIO->new(
         handler => sub {
