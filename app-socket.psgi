@@ -108,12 +108,6 @@ builder {
             return;
         }
     );
-
-    enable "Static", path => sub { s!^/static/!! }, root => 'static';
-
-    mount '/' => sub {
-        return [ 200, [], [ read_file('templates/index.tt') ] ];
-    };
 };
 
 # vim:ft=perl

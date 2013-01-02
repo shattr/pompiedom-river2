@@ -20,13 +20,16 @@
         </div>
 
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
+        <script src="/static/socket.io/socket.io.js"></script>
+
         <script>
             $(document).ready(function() {
-                var socket = io.connect('http://localhost:5000');
+                var socket = io.connect('http://localhost:5001');
+                socket.on('error', function(data) {
+                    console.log('error',data);
+                });
 
                 socket.on('message', function(data) {
-
                     console.log(data);
 
                     if (!data.key) {
